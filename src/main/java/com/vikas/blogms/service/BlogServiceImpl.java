@@ -15,24 +15,23 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class BlogServiceImpl {
-
 	@Autowired
 	private BlogRepo blogRepo;
 
 	public CreateBlogResponse createBlog(CreateBlogRequest createBlogRequest) {
+		Blog blog = new Blog();
+		blog.setTitle(createBlogRequest.getTitle());
+		// blog.setContent(createBlogRequest.getContent());
+		blog.setAuthorId(createBlogRequest.getAuthorId());
+		// blog.setCreatedAt(LocalDateTime.now());
+		// blog.setUpdatedAt(LocalDateTime.now());
 
-		try {
-			log.debug("createBell:: createBlogRequest: {}", createBlogRequest);
-			Blog newBlog = Blog.builder().authorId(createBlogRequest.getAuthorId()).title(createBlogRequest.getTitle())
-					.description(createBlogRequest.getDesc()).createdDate(LocalDateTime.now()).build();
-			blogRepo.save(newBlog);
+		Blog savedBlog = blogRepo.save(blog);
+		log.debug("Blog created with id: {}", savedBlog.getId());
 
-			return CreateBlogResponse.builder().authorId(newBlog.getAuthorId()).createdDate(newBlog.getCreatedDate())
-					.description(newBlog.getDescription()).title(newBlog.getTitle()).id(newBlog.getId()).build();
-
-		} catch (Exception e) {
-			log.error("Error", e.getClass(), e.getLocalizedMessage(), e);
-			return CreateBlogResponse.builder().success(false).build();
-		}
+		CreateBlogResponse createBlogResponse = new CreateBlogResponse();
+		createBlogResponse.setId(savedBlog.getId());
+		// createBlogResponse.setMessage("Blog created successfully");
+		return createBlogResponse;
 	}
 }
